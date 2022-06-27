@@ -113,6 +113,9 @@ export default function Example() {
                 List of Workspace
                 </a>
                 <a href="#" className="text-base font-medium text-gray-500 hover:text-gray-900">
+                My Workspace
+                </a>
+                <a href="#" className="text-base font-medium text-gray-500 hover:text-gray-900">
                  List of Board
                 </a>
 

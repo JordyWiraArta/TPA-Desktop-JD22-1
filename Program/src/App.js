@@ -6,6 +6,7 @@ import Login from './Pages/Login';
 import React from 'react';
 import Header from './Pages/Header.jsx';
 import CreateWorkspaceForm from './Pages/CreateWorkspaceForm.jsx';
+import WorkspaceDetail from './Pages/WorkspaceDetail';
 import HeaderLogged from './Pages/HeaderLoged.jsx';
 import { AuthProvider} from './js/Auth';
 import { Route, Routes} from 'react-router-dom';
@@ -40,6 +41,7 @@ function App() {
         
           <Route path="/home/createworkspace" element={<CreateWorkspaceForm/> }/>
 
+          <Route path="/home/workspacedetail/:id" element={<WorkspaceDetail/>}/>
         </Routes>
 
       </GetWorkspaceProvider>

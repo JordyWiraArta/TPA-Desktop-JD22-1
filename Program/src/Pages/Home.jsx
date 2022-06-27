@@ -6,7 +6,8 @@ import WoCard from '../Component/WoCard.jsx';
 export default function Home(){
 
         let user = UseCurrUser();
-
+        
+        console.log(user.currUser)
         if (user.currUser != null) {
             return(
                 <div>

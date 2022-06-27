@@ -1,20 +1,23 @@
 import React, {useEffect, useRef} from "react";
 import {Link, useNavigate} from 'react-router-dom';
-import { inputWorkspace } from "../js/WorkspaceController";
+import { InputWorkspace } from "../js/WorkspaceController";
+import { UseCurrUser } from "../js/Auth";
 
 export default function WorkspaceForm(){
     
     let NameRef = useRef();
     let DescRef = useRef();
-    let navigateTo = useNavigate();
+    let user = UseCurrUser();
     
     function CreateWorkspace(e){
-        
+
+        console.log("masuk")
         let name = NameRef.current.value;
         let desc = DescRef.current.value;
-        inputWorkspace(name, desc);
+        InputWorkspace(name, desc, user.currUser.uid);
+        
  
-        navigateTo('/home')
+        // useNavigate('/home');
         
     }
 
@@ -39,7 +42,7 @@ export default function WorkspaceForm(){
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create Workspace</h2>
                     
                     </div>
-                    <form className="mt-8 space-y-6" action="#" method="POST">
+                    {/* <form className="mt-8 space-y-6" action="/home" method=""> */}
                     <input type="hidden" name="remember" defaultValue="true" />
                     <div className="rounded-md shadow-sm -space-y-px">
                     
@@ -78,7 +81,7 @@ export default function WorkspaceForm(){
 
                     <div>
                         <button
-                        type="submit"
+                        // type="submit"
                         onClick={CreateWorkspace}
                         className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#16a34a] hover:bg-[#15803d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
                         >
@@ -88,7 +91,7 @@ export default function WorkspaceForm(){
 
                     
 
-                    </form>
+                    {/* </form> */}
                 </div>
             </div>
         </div>
