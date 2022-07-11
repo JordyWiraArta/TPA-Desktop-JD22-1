@@ -1,6 +1,7 @@
  import { db } from '../firebaseConfig';
- import { collection, addDoc, updateDoc, doc, arrayRemove, arrayUnion, deleteDoc} from 'firebase/firestore';
+ import { collection, addDoc, updateDoc, doc, arrayRemove, arrayUnion, deleteDoc, getDoc} from 'firebase/firestore';
 import { createContext,  useContext, useEffect, useState } from 'react';
+import { closeBoard } from './BoardController';
 
  export const workspaceRef = collection(db, 'Workspace');
  const workspaceContext = createContext() 
@@ -85,6 +86,15 @@ import { createContext,  useContext, useEffect, useState } from 'react';
  }
 
  export async function deleteWorkspace(workspaceId){
+
+
+    getDoc(doc(db, "Workspace", workspaceId))
+    .then((doc)=>{
+       let workspace = doc.data();
+       workspace.AllWorkspaceBoardId.forEach(boardId => {
+         closeBoard(boardId);
+       });
+    })
    await deleteDoc( doc(db, "Workspace", workspaceId)) 
  }
 
