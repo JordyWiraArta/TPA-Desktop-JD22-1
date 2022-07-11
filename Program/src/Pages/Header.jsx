@@ -84,7 +84,7 @@ function classNames(...classes) {
 }
 
 export default function Example() {
-  signOut(getAuth(app))
+  // signOut(getAuth(app))
   return (
     <Popover className="relative bg-white">
       {({ open }) => (

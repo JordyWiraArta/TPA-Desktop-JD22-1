@@ -91,6 +91,7 @@ import { closeBoard } from './BoardController';
     getDoc(doc(db, "Workspace", workspaceId))
     .then((doc)=>{
        let workspace = doc.data();
+       console.log(workspace.AllWorkspaceAdminId);
        workspace.AllWorkspaceBoardId.forEach(boardId => {
          closeBoard(boardId);
        });
