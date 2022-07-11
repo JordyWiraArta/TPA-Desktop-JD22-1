@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import app from "../firebaseConfig";
 import { signInWithEmailAndPassword, getAuth } from "@firebase/auth";
 
@@ -8,6 +8,7 @@ export default function Login(){
     let emailRef = useRef();
     let passRef = useRef();
     let navigateTo = useNavigate();
+    const {acc} = useParams();
 
     function login(e){
         e.preventDefault();
@@ -17,8 +18,8 @@ export default function Login(){
         let auth = getAuth(app)
         signInWithEmailAndPassword(auth, email, password)
         .then(() => {
-            
-            navigateTo("/home");
+            if(acc != "undefined") navigateTo("/invitationlink/" + acc);
+            else navigateTo("/home");
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -103,7 +104,7 @@ export default function Login(){
 
                 <div>
                     <Link
-                    to="/registration"
+                    to={"/registration/"+ acc}
                     className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md  bg-[#fafafa] hover:bg-[#f4f4f5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                     Sign up

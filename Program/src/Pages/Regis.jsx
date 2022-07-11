@@ -1,32 +1,29 @@
 import React, {useRef} from "react";
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import app from "../firebaseConfig";
 import { getAuth, createUserWithEmailAndPassword} from "@firebase/auth";
-import { updateProfile } from "@firebase/auth";
+import { AddNewUser } from "../js/UserController.js";
 
 export default function Regis(){
     let nameRef = useRef();
     let emailRef = useRef();
     let passRef = useRef();
     let navigateTo = useNavigate();
+    const {acc} = useParams();
 
     function createAcc(e){
         e.preventDefault();
         const name = nameRef.current.value;
         const email = emailRef.current.value;
         const password = passRef.current.value;
-
         const auth = getAuth(app);
 
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 let user = userCredential.user;
-                updateProfile(user, {
-                    displayName: name
-                }).catch((error) => {
-                    console.log(error.code)
-                })
-                navigateTo('/home')
+                AddNewUser(name, user.email, user.uid);
+                if(acc != "undefined") navigateTo("/invitationlink/" + acc);
+                else navigateTo('/home');
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -132,7 +129,7 @@ export default function Regis(){
 
                 <div>
                     <Link
-                    to="/login"
+                    to={"/login/"+acc}
                     className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md bg-[#fafafa] hover:bg-[#f4f4f5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                     Sign in

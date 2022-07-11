@@ -1,7 +1,9 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment } from 'react'
 import {Link} from "react-router-dom";
-import { Popover, Transition } from '@headlessui/react'
+import { Popover, Transition } from '@headlessui/react';
+import { signOut, getAuth } from '@firebase/auth';
+
 import {
   BookmarkAltIcon,
   CalendarIcon,
@@ -16,6 +18,7 @@ import {
   ViewGridIcon,
   XIcon,
 } from '@heroicons/react/outline'
+import app from '../firebaseConfig';
 
 
 const solutions = [
@@ -81,10 +84,7 @@ function classNames(...classes) {
 }
 
 export default function Example() {
-
-  
-
-
+  signOut(getAuth(app))
   return (
     <Popover className="relative bg-white">
       {({ open }) => (
@@ -108,13 +108,13 @@ export default function Example() {
               <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
 
                 <Link 
-                to="/login" 
+                to={"/login/" + undefined }
                 className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900">
                   Sign in
                 </Link>
                 
                 <Link
-                  to="/registration"
+                  to={"/registration/"+undefined}
                   className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                 >
                   Sign up

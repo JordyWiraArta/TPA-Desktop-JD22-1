@@ -8,7 +8,12 @@ const url = require('url');
 let mainWindow;
 
 function createWindow() {
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow = new BrowserWindow(
+        {
+            width: 800, 
+            height: 600, 
+            icon: 'src/icon.ico'
+        });
 
     mainWindow.loadURL('http://localhost:3000');
 
@@ -18,6 +23,17 @@ function createWindow() {
         mainWindow = null
     })
 }
+
+app.setUserTasks([
+    {
+        program: process.execPath,
+        arguments: '--new-window',
+        iconPath: process.execPath,
+        iconIndex: 0,
+        title: 'New Window',
+        description: 'create a new window'
+    }
+])
 
 app.on('ready', createWindow);
 

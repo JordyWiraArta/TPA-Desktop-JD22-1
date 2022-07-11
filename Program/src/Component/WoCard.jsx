@@ -1,18 +1,40 @@
 import React, { useEffect, useState} from "react";
-import { GetWorkspaceContext, passWorkspaceId } from "../js/WorkspaceController";
+import { workspaceRef } from "../js/WorkspaceController";
 import { Link } from "react-router-dom";
+import {orderBy, query, onSnapshot} from "firebase/firestore";
 import { UseCurrUser } from "../js/Auth";
 
 
 export default function WoCard(){
-    let workspaceContext = GetWorkspaceContext();
-    let userContext = UseCurrUser();
-    
-    const workspaces = workspaceContext['workspaces'];
-    const usersWs = workspaceContext['usersWs'];
-    
-    console.log(workspaces[0])
 
+    const [workspaces, setWorkspaces] = useState([]);
+    const [loadWs, setLoadWs] = useState(true);
+
+    useEffect(() => {
+       let q = query(workspaceRef, orderBy('Name', 'asc'));
+       const workspace = [];
+       
+       onSnapshot(q, (snapShot)=>{
+          snapShot.docs.forEach( (doc) => {
+             workspace.push(
+                {
+                   ...doc.data(),
+                   id: doc.id
+                });
+                
+             })
+             setWorkspaces(workspace)
+             setLoadWs(false)
+          })  
+       }, [!loadWs])
+
+  if(loadWs){
+    return(
+      <div>
+        Loading..
+      </div>
+    )
+  }else {
     return(
         <div>
                        
@@ -63,4 +85,6 @@ export default function WoCard(){
                         </div>
                     </div>
     )
+
+  }
 }

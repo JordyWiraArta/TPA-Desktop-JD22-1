@@ -8,16 +8,21 @@ import Header from './Pages/Header.jsx';
 import CreateWorkspaceForm from './Pages/CreateWorkspaceForm.jsx';
 import WorkspaceDetail from './Pages/WorkspaceDetail';
 import HeaderLogged from './Pages/HeaderLoged.jsx';
+import AccRej from './Pages/AccRej.jsx';
+import InviteMember from './Pages/InviteMember';
+import CreateBoard from './Pages/CreateBoard';
+import BoardDetail from './Pages/BoardDetail';
+import MyWo from './Component/myWo';
 import { AuthProvider} from './js/Auth';
 import { Route, Routes} from 'react-router-dom';
-import { GetWorkspaceProvider } from './js/WorkspaceController'
+// import { GetWorkspaceProvider } from './js/WorkspaceController'
 
 function App() {
 
   return (
 
     <AuthProvider>
-      <GetWorkspaceProvider>
+      {/* <GetWorkspaceProvider> */}
 
         <Routes>
 
@@ -28,23 +33,28 @@ function App() {
           </React.Fragment>
           } />
 
-          <Route path="/registration" element={<Regis />} />
+          <Route path="/registration/:acc" element={<Regis />} />
           
-          <Route path="/login" element={<Login />} />
+          <Route path="/login/:acc" element={<Login />} />
           
           <Route path="/home" element={
             <React.Fragment>
               <HeaderLogged/>
-              <Home/>
             </React.Fragment>
           }/>
         
           <Route path="/home/createworkspace" element={<CreateWorkspaceForm/> }/>
 
           <Route path="/home/workspacedetail/:id" element={<WorkspaceDetail/>}/>
+          <Route path="/createboard/:id" element={<CreateBoard/>}/>
+          <Route path="/home/invite/:id" element={<InviteMember/>}/>
+          <Route path="/invitationlink/:id" element={<AccRej/>}/>
+          <Route path="/boarddetail/:workspaceId/:boardId" element={<BoardDetail/>}/>
+
+          <Route path="/choose/:id" element={<MyWo/>}/>
         </Routes>
 
-      </GetWorkspaceProvider>
+      {/* </GetWorkspaceProvider> */}
       
     </AuthProvider>
   );
