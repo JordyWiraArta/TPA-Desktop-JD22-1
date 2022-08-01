@@ -2,24 +2,29 @@ import { useParams, Link } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { UseCurrUser } from "../js/Auth.js";
 import { useEffect, useState, Fragment, useRef } from "react";
-import { doc, getDoc, where } from "firebase/firestore";
+import { addDoc, doc, getDoc, where } from "firebase/firestore";
 import { db } from "../firebaseConfig.js";
 import { RemoveUserWo, GrantUserBoard, RevokeUserBoard, RemoveUserBo, setFavoriteBoard, untoggleFavorite } from "../js/UserController";
 import { Dialog, Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
-import { SetVisibility } from "../js/WorkspaceController";
+import { deleteListBoard, SetVisibility } from "../js/BoardController";
 import RestrictionPopup from "../Component/RestrictionPopup.jsx";
 import { ExclamationIcon } from '@heroicons/react/outline';
 import { closeBoard, deleteBoard, GrantBoardUser, removeBoardUser, RevokeBoardUser } from "../js/BoardController.js";
+import { deleteList, updateCardList } from "../js/ListController.js";
+import CreateCardPopUp from "../Component/CreateCardPopUp.jsx";
+import { CardRef } from "../js/CardController.js";
 
 export default function BoardDetail(){
     const { workspaceId, boardId } = useParams();
+    const textRef = useRef();
     let navigateTo = useNavigate()
     let userContext = UseCurrUser()
     let user = userContext.user;
 
     const [board, setBoard] = useState([]);
     const [lists, setLists] = useState([]);
+    const [selListId, setSelListId] = useState("");
     
     const [admins, setAdmin] = useState([]);
     const [members, setMember] = useState([]);
@@ -36,8 +41,11 @@ export default function BoardDetail(){
     const [remove, setRemove] = useState(false);
     const cancelButtonRef = useRef();
 
+    const [cardCreate, setCardCreate] = useState(false);
+
+    const [src, setSrc] = useState("");
+
     const handleShorcut = (e) =>{
-      console.log(e.key)
       if(e.key === "Escape" && !manage){
         navigateTo("/home");
       } else if(e.key === "Escape" && manage){
@@ -66,7 +74,13 @@ export default function BoardDetail(){
              setLoadWs(false)
          })
         }, [!loadWs])
-
+    
+    useEffect(() => {
+          if(userContext.currUser === null){
+              navigateTo('/registration/'+undefined)
+          } 
+       
+      }, [])
 
     function LoadMembers(){
             
@@ -105,8 +119,8 @@ export default function BoardDetail(){
                         setConfirm("remove");
                         setSelectedId(memberId);
                       }}
-                       className="ml-4 p-1 text-sm font-bold text-red-500 hover:text-red-600]">remove</a> 
 
+                       className="ml-4 p-1 text-sm font-bold text-red-500 hover:text-red-600]">remove</a> 
                        }
                   </div>
 
@@ -170,8 +184,20 @@ export default function BoardDetail(){
       return userName;
   }
 
+  function GetListData(listId){
+    const [list, setList] = useState("");
+
+    getDoc(doc(db, "List", listId))
+          .then((doc) =>{
+              let list = doc.data();
+              setList(list)
+          })
+    return list;
+  }
+
 
     function ConfirmationPopup(type, userId) {
+      console.log("masuk")
       let needGrant = false;
       if(type == "leave" && admins.length <=1 && members.length <=1 && type !== "closeNleave"){
         type = "closeOrDelete";
@@ -266,12 +292,14 @@ export default function BoardDetail(){
                         else if(type == "close"){
                           closeBoard(boardId);
                           members.forEach((memberId) => RemoveUserBo(memberId, boardId));
-                          navigateTo("/home")
+                          navigateTo("/home");
+
                         } 
                         
                         else if(type == "closeNLeave"){
                           closeBoard(boardId);
                           navigateTo("/home");
+
                         } 
                         else if(type == "deleteNLeave"){
                           deleteBoard(boardId);
@@ -284,6 +312,10 @@ export default function BoardDetail(){
                           admins.forEach( (adminId) => RemoveUserBo(adminId, boardId));
                           members.forEach( (memberId) => RemoveUserBo(memberId,boardId));
                           navigateTo("/home");
+
+                        } else if(type == "deleteList"){
+                          deleteList(selListId);
+                          deleteListBoard(boardId, selListId);
                         }
 
                         if(type == "closeOrDelete"){
@@ -342,7 +374,104 @@ export default function BoardDetail(){
           {ConfirmationPopup(confirm, selectedId)}
         </div>
       )
-    } else{
+    } else if(cardCreate){
+      // console.log()
+   
+      
+    function CreateCard(e){
+      
+      let name = textRef.current.value;
+          try{
+              addDoc(CardRef, {
+                  Name: name,
+                  Description: ""
+      
+              }).then((doc) => {
+                  updateCardList(selListId, doc.id);
+              })
+              
+          }catch (error){
+              console.log(error)
+          }    
+      }
+      
+        return (
+          <Transition.Root show={cardCreate} as={Fragment}>
+            <Dialog as="div" static className="fixed z-10 inset-0 overflow-y-auto" open={cardCreate} onClose={setOpen}>
+              <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                </Transition.Child>
+      
+                {/* This element is to trick the browser into centering the modal contents. */}
+                <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+                  &#8203;
+                </span>
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                  enterTo="opacity-100 translate-y-0 sm:scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                  leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                >
+                  <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                    <div>
+                      <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
+                          Create Card
+                        </Dialog.Title>
+                      <div className="mt-3 text-center sm:mt-5">
+                        <Dialog.Title as="h3" className="text-sm leading-6 font-medium text-gray-900">
+                          Card Name
+                        </Dialog.Title>
+                          <div className="mt-2">
+                        <input
+                              ref={textRef}
+                              autoComplete="off"
+                              required
+                              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-5 sm:mt-6">
+                      <button
+                        type="button"
+                        className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                        onClick={() =>{ 
+                          CreateCard();
+                          setCardCreate(false);
+                          }}
+                      >
+                        Create Card
+                      </button>
+                      <button
+                        type="button"
+                        className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                        onClick={() => setCardCreate(false)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </Transition.Child>
+              </div>
+            </Dialog>
+          </Transition.Root>
+        )
+      
+    } 
+    
+    else{
         
         function LoadList(){
             if(lists.length == 0){
@@ -353,19 +482,55 @@ export default function BoardDetail(){
                 return(
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     {lists.map((listId) => {
-                      return (
+
+                      let list = GetListData(listId)
+                      const Cards = [{name:"1"}, {name:"2"}, {name:"3"}];
+                      let valid = true;
+                      if(src === "") valid = true;
+                      else valid = list.Name.includes(src);
+
+                      if(valid) return (
                         <div
                         key={listId}
-                        className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                        className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm space-x-3"
                         >
                         
-                        <div className="flex-1 min-w-0">
-                            <a href="#" className="focus:outline-none">
-                            <span className="absolute inset-0" aria-hidden="true" />
-                            <p className="text-sm font-medium text-gray-900">{listId}</p>
-
-                            </a>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 mx-5 mb-4">{list.Name}</p>
+                        {(user.data.OwnedBoardId.includes(boardId) || user.data.JoinedBoardId.includes(boardId)) && <div className="flex">
+                            <button
+                            onClick={()=>{
+                              setSelListId(listId);
+                              setCardCreate(true);
+                            }}
+                            className="mx-4 mb-4 group relative py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#16a34a] hover:bg-[#15803d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                            Create Card
+                            </button>
+                            <button
+                            onClick={()=>{
+                              setConfirm("deleteList");
+                              setSelListId(listId);
+                              setOpen(true);
+                            }}
+                            className="mx-4 mb-4 group relative py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                            Delete List
+                            </button>
+                          </div>
+                          }
                         </div>
+
+                        <ul className="divide-y divide-gray-200">
+                          {Cards.map((card) => {
+
+                            if(card.name.includes(src)) return <div key={card.name} className="my-4 py-4 rounded-lg border border-gray-300 px-6 hover:border-blue-400">
+                              {card.name}
+                            </div>
+                          }
+
+                          )}
+                        </ul>
                         </div>
                     )})}
                     </div>
@@ -581,7 +746,7 @@ export default function BoardDetail(){
                         </button>}
                     {user.data.OwnedBoardId.includes(boardId) && manage && <ManageWorkspace/>}
                     {(user.data.OwnedBoardId.includes(boardId) || user.data.JoinedBoardId.includes(boardId)) && !manage && <Link
-                    to={"/createList/"+ boardId}
+                    to={"/createList/"+ boardId+"/"+workspaceId}
                     className="mx-4 group relative py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#16a34a] hover:bg-[#15803d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                     Create List
@@ -609,6 +774,14 @@ export default function BoardDetail(){
                 <hr className="mt-6"></hr> 
                 {!manage && <div className="px-4">
                 <h1 className="my-4 text-3xl text-black-900">List</h1>
+                <input
+                  id="search"
+                  name="search"
+                  className="block m-4 p-4 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="Search"
+                  type="search"
+                  onChange={(e) =>{setSrc(e.target.value)}}
+                  />
                 <LoadList/>
                 </div>}
             </div>

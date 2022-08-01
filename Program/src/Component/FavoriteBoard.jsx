@@ -5,7 +5,7 @@ import { db } from "../firebaseConfig";
 import { UseCurrUser } from "../js/Auth";
 import { BoardRef } from "../js/BoardController";
 
-export default function FavoriteBoard(){
+export default function FavoriteBoard({srcVal, ...Attr}){
 
     const [boardIds, setBoardIds] = useState([]);
     const [boards, setBoards] = useState([]);
@@ -56,7 +56,13 @@ export default function FavoriteBoard(){
                {boards.map((board) => {
                     if(boardIds.includes(board.id)){
 
-                        return (
+                        let valid = false;
+                          if(srcVal === null || srcVal === "" || srcVal === undefined){
+                            valid = true;
+                          } else if(board.Name.includes(srcVal) || board.Description.includes(srcVal)){
+                            valid = true;
+                          }
+                          if (valid) return (
                               <Link
                               to={"/boarddetail/"+board.WorkspaceId+"/"+board.id}
                               key={board.id}

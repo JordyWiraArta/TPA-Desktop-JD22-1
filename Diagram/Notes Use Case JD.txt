@@ -1,0 +1,23 @@
+Pilihan 5 Use Cases:
+1. Add Card Component, comment
+- setiap ada comment kirim notif ke card watcher
+- validasi yang bisa dimention itu tergantung type visibility dari board, kalau workspace-visibility berarti semua anggota workspace bisa liat, kalau board-visibility berarti cuma member board itu yang bisa di mention
+
+2. Invite Member Board
+- Validasi kalau misalkan visibility worspace-visible atau board-visible, hanya member workspace tempat board itu berada aja yang bisa join. 
+- validasi kalau misalkan visibility public, semua user bisa join.
+- antara link atau email
+
+3. Leave Board
+- kalau admin, dia validasi kalau misalkan dia satu-satunya admin dan masih ada member lain, di grant rolenya.
+- validasi kalau admin itu sendiri maka milih mau di close atau delete.
+- member kasih popup konfirmasi langsung keluar.
+
+4. View Workspace detail
+- Kalau belum login, bakal diarahkan ke page register.
+
+5. Delete Workspace
+- Kalau ada lebih dari satu admin, minta permission ke semua admin baru delete.
+- kalau satu admin aja langsung delete.
+- kalau delete semua board dalam workspace di close
+

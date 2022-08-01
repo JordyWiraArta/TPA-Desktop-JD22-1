@@ -6,16 +6,14 @@ import { UseCurrUser } from "../js/Auth";
 import { reopenBoard } from "../js/BoardController";
 
 
-export default function MyWo(){
+export default function MyWo( {srcVal, ...Attr}){
 
     const [workspaces, setWorkspaces] = useState([]);
     const [loadWs, setLoadWs] = useState(true);
     const [workspaces2, setWorkspaces2] = useState([]);
     const [loadWs2, setLoadWs2] = useState(true);
     const navigateTo = useNavigate();
-
     const {id} = useParams();
-    console.log(id)
     const userContext = UseCurrUser();;
     const user = userContext.user;
 
@@ -83,7 +81,13 @@ export default function MyWo(){
                           }
 
                           let stringUrl = "/home/workspacedetail/" + workspace.id;
-                        return(
+                          let valid = false;
+                          if(srcVal === null || srcVal === "" || srcVal === undefined){
+                            valid = true;
+                          } else if(workspace.Name.includes(srcVal) || workspace.Description.includes(srcVal)){
+                            valid = true;
+                          }
+                          if (valid) return(
                             <div
                             
                             key={workspace.id}
@@ -140,14 +144,20 @@ export default function MyWo(){
                           }
 
                           let stringUrl = "/home/workspacedetail/" + workspace.id;
-                        return(
+                          let valid = false;
+                          if(srcVal === null || srcVal === "" || srcVal === undefined){
+                            valid = true;
+                          } else if(workspace.Name.includes(srcVal) || workspace.Description.includes(srcVal)){
+                            valid = true;
+                          }
+                          if (valid) return(
                             <div
                             
                             key={workspace.id}
                             
                             className="relative pl-4 pr-6 py-5 hover:bg-blue-50 sm:py-6 sm:pl-6 lg:pl-8 xl:pl-6"
                             >
-
+ 
                               <a
                               href="#"
                               onClick={() =>{

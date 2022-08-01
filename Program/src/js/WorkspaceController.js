@@ -85,19 +85,18 @@ import { closeBoard } from './BoardController';
   }
  }
 
- export async function deleteWorkspace(workspaceId){
-
-
-    getDoc(doc(db, "Workspace", workspaceId))
-    .then((doc)=>{
-       let workspace = doc.data();
-       console.log(workspace.AllWorkspaceAdminId);
-       workspace.AllWorkspaceBoardId.forEach(boardId => {
+export async function deleteWorkspace(workspaceId){
+   await getDoc(doc(db, "Workspace", workspaceId))
+   .then((doc)=>{
+      let workspace = doc.data();
+      workspace.AllWorkspaceBoardId.forEach(boardId => {
          closeBoard(boardId);
-       });
-    })
-   await deleteDoc( doc(db, "Workspace", workspaceId)) 
- }
+      });
+   deleteDoc(doc.ref);
+   })
+}
+
+
 
  export const GetWorkspaceProvider = ({children}) => {
     

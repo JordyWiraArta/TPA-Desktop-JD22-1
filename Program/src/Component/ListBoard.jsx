@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { BoardRef } from "../js/BoardController";
 
-export default function ListBoard(){
+export default function ListBoard( {srcVal, ...Attr}){
 
     const [boards, setBoards] = useState([]);
     const [loadBo, setLoadBo] = useState(true);
@@ -40,7 +40,13 @@ export default function ListBoard(){
                {boards.map((board) => {
                     
                     if(!board.StatusClosed){
-                        return (
+                        let valid = false;
+                          if(srcVal === null || srcVal === "" || srcVal === undefined){
+                            valid = true;
+                          } else if(board.Name.includes(srcVal) || board.Description.includes(srcVal)){
+                            valid = true;
+                          }
+                          if (valid) return (
                           <Link
                           to={"/boarddetail/"+board.WorkspaceId+"/"+board.id}
                           key={board.id}

@@ -46,16 +46,16 @@ export function RevokeBoardUser(userId, BoardId){
 }
 
 export function GrantBoardUser(userId, BoardId){
-  try {
+   try {
 
      updateDoc( doc(db, "Board", BoardId), {
         AllBoardAdminId: arrayUnion(userId),
         AllBoardMemberId: arrayRemove(userId)
      })
 
- } catch (error) {
-     console.log(error)
- }
+   } catch (error) {
+      console.log(error)
+   }
 }
 
 export function SetVisibility(visibility, BoardId){
@@ -101,7 +101,7 @@ export function closeBoard(BoardId){
 
       updateDoc( doc(db, "Board", BoardId), {
          StatusClosed: true,
-         workspaceId: ""
+         WorkspaceId: ""
       })
  
   } catch (error) {
@@ -113,9 +113,9 @@ export function reopenBoard(BoardId, workspaceId){
    try {
       updateDoc( doc(db, "Board", BoardId), {
          StatusClosed: false,
-         workspaceId: workspaceId
+         WorkspaceId: workspaceId
       })
- 
+      updateBoardWorkspace(workspaceId, BoardId);
   } catch (error) {
       console.log(error)
   }
@@ -124,3 +124,31 @@ export function reopenBoard(BoardId, workspaceId){
 export async function deleteBoard(BoardId){
   await deleteDoc( doc(db, "Board", BoardId)) 
 }
+
+export function updateListBoard(boardId, listId){
+   try {
+
+      updateDoc( doc(db, "Board", boardId), {
+         AllBoardListId: arrayUnion(
+            listId
+         )
+      })
+
+  } catch (error) {
+      console.log(error)
+  }
+ }
+
+ export function deleteListBoard(boardId, listId){
+   try {
+
+      updateDoc( doc(db, "Board", boardId), {
+         AllBoardListId: arrayRemove(
+            listId
+         )
+      })
+
+  } catch (error) {
+      console.log(error)
+  }
+ }

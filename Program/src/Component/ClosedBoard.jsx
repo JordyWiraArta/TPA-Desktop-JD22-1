@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { UseCurrUser } from "../js/Auth";
 import { BoardRef } from "../js/BoardController";
 
-export default function ClosedBoard(){
+export default function ClosedBoard( {srcVal, ...Attr} ){
 
     const [boards, setBoards] = useState([]);
     const [loadBo, setLoadBo] = useState(true);
@@ -43,7 +43,14 @@ export default function ClosedBoard(){
                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                {boards.map((board) => {
                    if(board.AllBoardAdminId.includes(user.id)){
-                       return (
+                       
+                    let valid = false;
+                    if(srcVal === null || srcVal === "" || srcVal === undefined){
+                    valid = true;
+                    } else if(board.Name.includes(srcVal) || board.Description.includes(srcVal)){
+                    valid = true;
+                    }
+                    if (valid)return (
                          <a
                          onClick={()=>{
                              navigateTo("/choose/"+ board.id);

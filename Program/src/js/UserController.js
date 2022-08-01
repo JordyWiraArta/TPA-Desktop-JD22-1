@@ -4,8 +4,6 @@ import { useState } from 'react';
 
 export const userRef = collection(db, "User"); 
 
-
-
 export const AddNewUser = (newName, email, userId) => {
     
     try{
@@ -19,7 +17,6 @@ export const AddNewUser = (newName, email, userId) => {
                 OwnedBoardId: [],
                 JoinedBoardId: [],
                 FavoriteBoard: []
-
         })
 
     }catch (error){
@@ -178,6 +175,42 @@ export function untoggleFavorite(userId, boardId){
 
         updateDoc( doc(db, "User", userId), {
             FavoriteBoard: arrayRemove(boardId)
+        })
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export function updateNotif(userId, notificationFrequency){
+    try {
+        
+        updateDoc(doc(db, "User", userId), {
+            NotificationFrequency: notificationFrequency
+        })
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export function UpdateEmail(userId, email){
+    try {
+        
+        updateDoc(doc(db, "User", userId), {
+            Email: email
+        })
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export function UpdateName(userId, name){
+    try {
+        
+        updateDoc(doc(db, "User", userId), {
+            Name: name
         })
 
     } catch (error) {

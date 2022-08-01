@@ -17,20 +17,15 @@ export default function HeaderLoged(){
 
   let navigateTo = useNavigate();
   let user = UseCurrUser();
+  const [src, setSrc] = useState("");
 
   const [view, setView] = useState("wolist");
 
-  const handleShorcut = (e) =>{
-    console.log(e.key);
-    if(e.key === "c" || e.key === "C"){
-        navigateTo("/home/createworkspace")
-    }
-}
   const active = "border-b-4 text-base font-medium text-gray-500 hover:text-gray-900";
   const nonactive = "text-base font-medium text-gray-500 hover:text-gray-900";
 
   return (
-    <div tabIndex={0} onKeyDown={handleShorcut}>
+    <div tabIndex={0}>
       <Popover className="relative bg-white">
         {({ open }) => (
           <>
@@ -71,6 +66,12 @@ export default function HeaderLoged(){
                 </Popover.Group>
                 <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
                   
+                <Link
+                  className="mx-4"
+                  to="/setting">
+                      Settings
+                </Link>
+
                   <button
                   onClick = {e => signOut(getAuth(app)).then(navigateTo('/'))}>
                       logOut
@@ -85,12 +86,22 @@ export default function HeaderLoged(){
         )}
       </Popover>
       <div>
-          <BtnCrtWo/>
-          {view === "wolist" && <WoCard/>}
-          {view === "mywo" && <MyWo/>}
-          {view === "libo" && <ListBoard/>}
-          {view === "favbo" && <FavoriteBoard/>}
-          {view === "clobo" && <ClosedBoard/>}
+          <div className="flex my-4">
+                  {user.currUser != null && <BtnCrtWo/>}
+                  <input
+                  id="search"
+                  name="search"
+                  className="block mx-4 p-4 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="Search"
+                  type="search"
+                  onChange={(e) =>{setSrc(e.target.value)}}
+                  />    
+          </div>
+          {view === "wolist" && <WoCard srcVal={src}/>}
+          {view === "mywo" && <MyWo srcVal={src}/>}
+          {view === "libo" && <ListBoard srcVal={src}/>}
+          {view === "favbo" && <FavoriteBoard srcVal={src}/>}
+          {view === "clobo" && <ClosedBoard srcVal={src}/>}
       </div>
     </div>
   )
